@@ -78,16 +78,12 @@ object RepeatCipher {
   private val cipherStream = Stream.continually(cipher.toCharArray).flatten
 
   def run: Unit = {
-    val hashed1 = Data.problem5a zip cipherStream map {
+    val hashed = Data.problem5a zip cipherStream map {
       case (char, cipherChar) => char.toInt ^ cipherChar.toInt
     }
 
-    val hashed2 = Data.problem5b zip cipherStream map {
-      case (char, cipherChar) => char.toInt ^ cipherChar.toInt
-    }
-
-    assert(hashed1 == "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272")
-    assert(hashed2 == "a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
+    println(hashed map (_.toHexString) mkString "")
+    assert(hashed == "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
   }
 }
 
@@ -97,6 +93,8 @@ println("problem 3")
 Decode.run
 println("problem 4")
 FindTheOne.run
+println("problem 5")
+RepeatCipher.run
 
 
 
