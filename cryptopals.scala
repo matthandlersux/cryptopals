@@ -1,4 +1,6 @@
 import scala.util.Try
+import scala.annotation.tailrec
+import sun.misc.{BASE64Encoder, BASE64Decoder}
 
 object Shared {
   val alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -6,14 +8,84 @@ object Shared {
   val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
   val freqMap = freq.reverse.zipWithIndex.toMap
 
+  def transposeGrouped[A](list: Seq[A], size: Int): Seq[Seq[A]] = {
+    val grouped = (list grouped size).toSeq
+    Range(0, size) map { i =>
+      (grouped flatMap (_ lift i)).toSeq
+    }
+  }
+
   def xorWith(hash: String, char: Int): Seq[Int] =
     hash.grouped(2).map(hex => Try(Integer.parseInt(hex, 16)) getOrElse 0).map(_ ^ char).toSeq
+
+  def xorWith(bytes: Array[Byte], char: Int): Seq[Int] =
+    bytes.map(_ ^ char.toByte).toSeq
 
   def scoreString(string: String): Int =
     string.toCharArray.foldLeft(0) { (sum, char) =>
       sum + freqMap.getOrElse(char, 0)
     }
+
+  def editDistance(string1: String, string2: String): Int =
+    editDistance(string1.toCharArray map (_.toByte), string2.toCharArray map (_.toByte))
+
+  def editDistance(string1: Array[Byte], string2: Array[Byte]): Int = {
+    if (string1.size != string2.size) throw new Error("String sizes don't match")
+
+    val bitSetList = string1 zip string2 map {
+      case (a, b) => numberOfBitsSet(a ^ b)
+    }
+
+    bitSetList.sum
+  }
+
+  private def numberOfBitsSet(i: Int): Int = {
+    val byte = i.toByte
+    (0 to 7).map(i => (byte >>> i) & 1).sum
+  }
+
+  def encode64(string: String): String = (new BASE64Encoder().encodeBuffer(string.getBytes))
+
+  def decode64(string: String): Array[Byte] = (new BASE64Decoder().decodeBuffer(string))
 }
+
+object BreakRepeating {
+  import Shared.{editDistance, decode64, xorWith, alphabet, scoreString, transposeGrouped}
+
+  private val keySizes = Range(2, 41)
+  private val tryKeySizes = 3
+
+  def run: Unit = {
+    val bytes = decode64(Data.problem6)
+    val tryKeySizes = getKeySize(bytes)
+
+    tryKeySizes map { keySize =>
+      val transposed = transposeGrouped(bytes, keySize)
+      println((bytes grouped keySize).size)
+      println(transposed.size)
+      for (block <- transposed) yield {
+        val top = (for (char <- alphabet.toCharArray.map(_.toInt)) yield {
+          val intList = xorWith(block.toArray, char)
+          val stringified = intList map (_.toChar) mkString ""
+          (char.toChar, scoreString(stringified))
+        }) sortBy (-_._2) take 1 map (_._1)
+
+        println(top.head)
+      }
+    }
+  }
+
+  private def getKeySize(string: Array[Byte]): Seq[Int] =
+    keySizes map { keySize =>
+      val prefix1 = string take keySize
+      val prefix2 = string drop keySize take keySize
+
+      (keySize, editDistance(prefix1, prefix2).toDouble/keySize)
+    } sortBy (_._2) take 3 map (_._1)
+
+}
+
+BreakRepeating.run
 
 object XorProblem {
   def run: Unit = {
@@ -87,14 +159,15 @@ object RepeatCipher {
   }
 }
 
-println("problem 2")
-XorProblem.run
-println("problem 3")
-Decode.run
-println("problem 4")
-FindTheOne.run
-println("problem 5")
-RepeatCipher.run
+// println("problem 2")
+// XorProblem.run
+// println("problem 3")
+// Decode.run
+// println("problem 4")
+// FindTheOne.run
+// println("problem 5")
+// RepeatCipher.run
+// println(Shared.editDistance("this is a test", "wokka wokka!!!"))
 
 
 
@@ -449,4 +522,70 @@ object Data {
 
   val problem5a = "Burning 'em, if you ain't quick and nimble"
   val problem5b = "I go crazy when I hear a cymbal"
+
+  val problem6 = """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""".stripMargin
+
 }
