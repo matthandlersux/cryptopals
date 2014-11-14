@@ -39,6 +39,21 @@ object Shared {
     bitSetList.sum
   }
 
+  def solveSingleByteXor(bytes: String): Char =
+    solveSingleByteXor(bytes.toCharArray map (_.toByte))
+
+  def solveSingleByteXor(bytes: Seq[Byte]): Char =
+    solveSingleByteXor(bytes.toArray)
+
+  def solveSingleByteXor(bytes: Array[Byte]): Char = {
+    val found = Range(0, 256) map { char =>
+      val stringified = xorWith(bytes, char) map (_.toChar) mkString ""
+      (char.toChar, scoreString(stringified))
+    } maxBy (_._2)
+
+    found._1
+  }
+
   private def numberOfBitsSet(i: Int): Int = {
     val byte = i.toByte
     (0 to 7).map(i => (byte >>> i) & 1).sum
@@ -50,7 +65,7 @@ object Shared {
 }
 
 object BreakRepeating {
-  import Shared.{editDistance, decode64, xorWith, alphabet, scoreString, transposeGrouped}
+  import Shared.{editDistance, decode64, xorWith, alphabet, scoreString, transposeGrouped, solveSingleByteXor}
 
   private val keySizes = Range(2, 41)
 
@@ -59,15 +74,7 @@ object BreakRepeating {
     val keySize = getKeySize(bytes)
 
     val transposed = transposeGrouped(bytes, keySize)
-    val cipher = for (block <- transposed) yield {
-      val top = (for (char <- Range(0, 256)) yield {
-        val intList = xorWith(block.toArray, char)
-        val stringified = intList map (_.toChar) mkString ""
-        (char.toChar, scoreString(stringified))
-      }) maxBy (_._2)
-
-      top._1
-    }
+    val cipher = transposed map solveSingleByteXor
 
     println(bytes zip Stream.continually(cipher).flatten map { case (a, b) => a ^ b } map (_.toChar) mkString "")
   }
@@ -110,20 +117,14 @@ object XorProblem {
 }
 
 object Decode {
-  import Shared.{xorWith, scoreString, alphabet, freq, freqMap}
+  import Shared.{xorWith, scoreString, alphabet, freq, freqMap, solveSingleByteXor}
 
   val hash = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
   def hexHash = hash.grouped(2)
   def intHash = hexHash map (Integer.parseInt(_, 16))
 
   def run: Unit = {
-    val scored = for (char <- alphabet.toCharArray.map(_.toInt)) yield {
-      val intList = xorWith(hash, char)
-      val stringified = intList map (_.toChar) mkString ""
-      (char.toChar, stringified, scoreString(stringified))
-    }
-
-    scored sortBy (-_._3) take 1 map println
+    println(solveSingleByteXor(hash))
   }
 }
 
