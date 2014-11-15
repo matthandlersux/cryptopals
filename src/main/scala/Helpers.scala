@@ -9,9 +9,14 @@ object Helpers {
 	private val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
 	private val freqMap = freq.reverse.zipWithIndex.toMap
 
-	def encode64(string: String): String = (new BASE64Encoder().encodeBuffer(string.getBytes))
+	def encode64(ints: Seq[Int]): String =
+		new BASE64Encoder().encodeBuffer((ints map (_.toByte)).toArray)
 
-	def decode64(string: String): Array[Byte] = (new BASE64Decoder().decodeBuffer(string))
+	def encode64(string: String): String =
+		new BASE64Encoder().encodeBuffer(string.getBytes)
+
+	def decode64(string: String): Array[Byte] =
+		new BASE64Decoder().decodeBuffer(string)
 
 	def transposeGrouped[A](list: Seq[A], size: Int): Seq[Seq[A]] = {
 	  val grouped = (list grouped size).toSeq

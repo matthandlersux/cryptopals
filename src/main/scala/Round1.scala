@@ -6,24 +6,26 @@ import helpers.Helpers
 
 object Round1 {
 
-  def problem1: Unit = {
-
+  def problem1: String = {
+    val string = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
+    val ints = string grouped 2 map Helpers.parseHex
+    Helpers.encode64(ints.toSeq)
   }
 
   def problem2: String = {
     val string1 = "1c0111001f010100061a024b53535009181c"
     val string2 = "686974207468652062756c6c277320657965"
-    // val string3 = "746865206b696420646f6e277420706c6179"
-
     Xor.xorStrings(string1, string2)
   }
 
-  def problem3: Unit = {
+  def problem3: String = {
     val hash = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    Crypto.solveSingleByteXor(hash)
+    val key = Crypto.solveSingleByteXor(hash)
+
+    Xor.xorSingleCharacter(hash, key)
   }
 
-  def problem4: Unit = {
+  def problem4: (Char, String, Int) = {
     (for {
       line <- Data.problem4.split("\n")
       char <- Helpers.alphabet
