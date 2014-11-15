@@ -2,6 +2,7 @@ package rounds
 
 import crypto.{Crypto, Xor}
 import data.Data
+import helpers.Helpers
 
 object Round1 {
 
@@ -25,54 +26,51 @@ object Round1 {
   def problem4: Unit = {
     (for {
       line <- Data.problem4.split("\n")
-      char <- alphabet.toCharArray.map(_.toInt)
+      char <- Helpers.alphabet
     } yield {
       val intList = Xor.xorWith(line, char)
       val stringified = intList map (_.toChar) mkString ""
-      (char.toChar, stringified, scoreString(stringified))
+      (char.toChar, stringified, Helpers.scoreString(stringified))
     }) maxBy (_._3)
   }
 
-  def problem5: Unit = {
-    private val key = "ICE"
-    private val keyStream = Stream.continually(key.toCharArray).flatten
+  def problem5: String = {
+    val key = "ICE"
+    val keyStream = Stream.continually(key.toCharArray).flatten
+    val text = """Burning 'em, if you ain't quick and nimble
+      |I go crazy when I hear a cymbal""".stripMargin
 
-    def run: Unit = {
-      val hashed = Data.problem5a zip cipherStream map {
-        case (char, cipherChar) => char.toInt ^ cipherChar.toInt
-      }
-
-      println(hashed map (_.toHexString) mkString "")
-      assert(hashed == "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
-    }
+    text zip keyStream map {
+      case (char, cipherChar) => char.toInt ^ cipherChar.toInt
+    } map (_.toHexString) mkString ""
   }
 
   def problem6: String = {
     val keySizes = Range(2, 41)
 
     val bytes = Helpers.decode64(Data.problem6)
-    val keySize = getKeySize(bytes)
+    val keySize = getKeySize(bytes, keySizes)
 
     val transposed = Helpers.transposeGrouped(bytes, keySize)
-    val cipher = transposed map solveSingleByteXor
+    val cipher = transposed map Crypto.solveSingleByteXor
 
     Crypto.solveRotatingCypher(bytes, cipher mkString "")
   }
 
-  private def getKeySize(string: Array[Byte]): Int =
-    (keySizes map { keySize =>
+  private def getKeySize(string: Array[Byte], range: Range): Int =
+    (range map { keySize =>
       val grouped = (string grouped keySize take 4).toSeq
       val distances = for {
         a <- grouped
         b <- grouped if b != a
-      } yield editDistance(a, b).toDouble
+      } yield Helpers.editDistance(a, b).toDouble
 
       (keySize, distances.sum/(keySize * distances.size))
     } minBy (_._2))._1
 
   def problem7: Unit = {
     val key = "YELLOW SUBMARINE"
-    val bytes = decode64(Data.problem7)
+    val bytes = Helpers.decode64(Data.problem7)
   }
 
   def problem8: Unit = {

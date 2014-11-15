@@ -1,5 +1,7 @@
 package crypto
 
+import helpers.Helpers
+
 object Crypto {
 
   def solveRotatingCypher(bytes: Array[Byte], cipher: String): String =
@@ -14,9 +16,9 @@ object Crypto {
     solveSingleByteXor(bytes.toArray)
 
   def solveSingleByteXor(bytes: Array[Byte]): Char = {
-    val found = Range(0, 256) map { char =>
+    val found = Helpers.alphabet map { char =>
       val stringified = Xor.xorWith(bytes, char) map (_.toChar) mkString ""
-      (char.toChar, scoreString(stringified))
+      (char.toChar, Helpers.scoreString(stringified))
     } maxBy (_._2)
 
     found._1

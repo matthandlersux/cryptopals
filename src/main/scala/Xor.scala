@@ -1,11 +1,12 @@
 package crypto
 
+import helpers.Helpers
 import scala.util.Try
 
 object Xor {
 
   def xorStrings(a: String, b: String): String =
-    val ints = toIntArray(a) zip toIntArray(b) map {
+    toIntArray(a) zip toIntArray(b) map {
       case (a, b) => a ^ b
     } map (_.toHexString) mkString ""
 

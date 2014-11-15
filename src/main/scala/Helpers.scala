@@ -4,6 +4,8 @@ import sun.misc.{BASE64Encoder, BASE64Decoder}
 
 object Helpers {
 
+	val alphabet = Range(0, 256)
+
 	private val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
 	private val freqMap = freq.reverse.zipWithIndex.toMap
 
