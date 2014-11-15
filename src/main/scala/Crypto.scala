@@ -4,10 +4,20 @@ import helpers.Helpers
 
 object Crypto {
 
-  def solveRotatingCypher(bytes: Array[Byte], cipher: String): String =
-    bytes zip Stream.continually(cipher.toCharArray).flatten map {
-      case (a, b) => a ^ b
-    } map (_.toChar) mkString ""
+  def hashWithRotatingKey(bytes: Array[Byte], key: String): String =
+    bytes zip Helpers.rotatingKey(key) map xorTuple map byteToHex mkString ""
+
+  private def byteToHex(byte: Int): String = {
+    val hex = byte.toHexString
+    if (hex.size == 1) "0" + hex else hex
+  }
+
+  def solveRotatingKey(bytes: Array[Byte], key: String): String =
+    bytes zip Stream.continually(key.toCharArray).flatten map xorTuple map (_.toChar) mkString ""
+
+  private def xorTuple: PartialFunction[(Byte, Char), Int] = {
+    case (a, b) => a ^ b
+  }
 
   def solveSingleByteXor(bytes: String): Char =
     solveSingleByteXor(bytes.toCharArray map (_.toByte))

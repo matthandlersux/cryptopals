@@ -38,13 +38,10 @@ object Round1 {
 
   def problem5: String = {
     val key = "ICE"
-    val keyStream = Stream.continually(key.toCharArray).flatten
     val text = """Burning 'em, if you ain't quick and nimble
       |I go crazy when I hear a cymbal""".stripMargin
 
-    text zip keyStream map {
-      case (char, cipherChar) => char.toInt ^ cipherChar.toInt
-    } map (_.toHexString) mkString ""
+    Crypto.hashWithRotatingKey(text.toCharArray map (_.toByte), key)
   }
 
   def problem6: String = {
@@ -56,7 +53,7 @@ object Round1 {
     val transposed = Helpers.transposeGrouped(bytes, keySize)
     val cipher = transposed map Crypto.solveSingleByteXor
 
-    Crypto.solveRotatingCypher(bytes, cipher mkString "")
+    Crypto.solveRotatingKey(bytes, cipher mkString "")
   }
 
   private def getKeySize(string: Array[Byte], range: Range): Int =
