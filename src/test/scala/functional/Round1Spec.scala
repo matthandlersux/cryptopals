@@ -2,6 +2,7 @@ package test.functional
 
 import rounds.Round1
 
+import scala.io.Source
 import org.scalatest._
 import Matchers._
 
@@ -47,6 +48,15 @@ class RoundOneSpec extends FreeSpec {
 
     "encodes the text" in {
       Round1.problem5 shouldEqual "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
+    }
+
+  }
+
+  "problem 6" - {
+
+    "decodes the paragraph" in {
+      val fixture = Source.fromFile("src/test/scala/fixtures/problem6.output.txt").mkString
+      Round1.problem6 shouldEqual fixture
     }
 
   }

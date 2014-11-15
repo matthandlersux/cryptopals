@@ -51,9 +51,9 @@ object Round1 {
     val keySize = getKeySize(bytes, keySizes)
 
     val transposed = Helpers.transposeGrouped(bytes, keySize)
-    val cipher = transposed map Crypto.solveSingleByteXor
+    val key = transposed map Crypto.solveSingleByteXor
 
-    Crypto.solveRotatingKey(bytes, cipher mkString "")
+    Crypto.solveRotatingKey(bytes, key mkString "")
   }
 
   private def getKeySize(string: Array[Byte], range: Range): Int =
