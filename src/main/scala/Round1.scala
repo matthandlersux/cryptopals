@@ -18,11 +18,11 @@ object Round1 {
     Xor.xorStrings(string1, string2)
   }
 
-  def problem3: String = {
+  def problem3: (Char, String) = {
     val hash = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    val key = Crypto.solveSingleByteXor(hash)
+    val key = Crypto.solveSingleByteXor(Helpers.hexToBytes(hash))
 
-    Xor.xorSingleCharacter(hash, key)
+    (key, Xor.xorWith(hash, key) map (_.toChar) mkString "")
   }
 
   def problem4: (Char, String, Int) = {

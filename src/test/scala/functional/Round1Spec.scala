@@ -26,7 +26,11 @@ class RoundOneSpec extends FreeSpec {
   "Problem 3" - {
 
     "finds the single character xor key" in {
-      Round1.problem3 shouldEqual 'V'
+      Round1.problem3._1 shouldEqual 'X'
+    }
+
+    "decodes the encrypted text" in {
+      Round1.problem3._2 shouldEqual "Cooking MC's like a pound of bacon"
     }
 
   }

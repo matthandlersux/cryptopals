@@ -4,10 +4,13 @@ import sun.misc.{BASE64Encoder, BASE64Decoder}
 
 object Helpers {
 
-	val alphabet = Range(0, 256)
+	val alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray map (_.toInt) //Range(0, 256)
 
 	private val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
 	private val freqMap = freq.reverse.zipWithIndex.toMap
+
+	def hexToBytes(string: String): Array[Byte] =
+		(string grouped 2 map parseHex map (_.toByte)).toArray
 
 	def encode64(ints: Seq[Int]): String =
 		new BASE64Encoder().encodeBuffer((ints map (_.toByte)).toArray)

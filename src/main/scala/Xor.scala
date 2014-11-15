@@ -5,9 +5,6 @@ import scala.util.Try
 
 object Xor {
 
-  def xorSingleCharacter(a: String, b: Char): String =
-    toIntArray(a) map (_ ^ b.toInt) map (_.toChar) mkString ""
-
   def xorStrings(a: String, b: String): String =
     toIntArray(a) zip toIntArray(b) map {
       case (a, b) => a ^ b
