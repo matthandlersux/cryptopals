@@ -9,6 +9,9 @@ object Helpers {
   private val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
   private val freqMap = freq.reverse.zipWithIndex.toMap
 
+  def padBlock(bytes: Array[Byte], length: Int, padChar: Byte = Byte.box(4)): Array[Byte] =
+    ((0 until length) map (bytes lift _ getOrElse padChar)).toArray
+
   def bytesToString(bytes: Array[Byte]): String =
     bytes map (_.toChar) mkString ""
 
