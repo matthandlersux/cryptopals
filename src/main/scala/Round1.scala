@@ -6,11 +6,13 @@ import helpers.Helpers
 
 object Round1 {
 
-  def problem1: String = {
-    val string = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
-    val ints = string grouped 2 map Helpers.parseHex
-    Helpers.encode64(ints.toSeq)
-  }
+  def problem1: String =
+    encodeHexStringToBase64(
+      "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
+    )
+
+  private def encodeHexStringToBase64(string: String): String =
+    Helpers.encode64((string grouped 2 map Helpers.parseHex).toSeq)
 
   def problem2: String = {
     val string1 = "1c0111001f010100061a024b53535009181c"
