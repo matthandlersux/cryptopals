@@ -9,10 +9,10 @@ object Crypto {
 
   def decryptAESECB(bytes: Array[Byte], key: String): String = {
     val algorithm = "AES"
-    val cipher = algorithm + "/ECB/PKCS5Padding"
+    val cipherName = algorithm + "/ECB/PKCS5Padding"
     val secretKey = new SecretKeySpec(key.getBytes("UTF8"), algorithm)
 
-    val decryptor = Cipher.getInstance(cipher)
+    val decryptor = Cipher.getInstance(cipherName)
     decryptor.init(Cipher.DECRYPT_MODE, secretKey)
     Helpers.bytesToString(decryptor.doFinal(bytes))
   }
