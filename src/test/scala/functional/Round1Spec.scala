@@ -6,7 +6,7 @@ import scala.io.Source
 import org.scalatest._
 import Matchers._
 
-class RoundOneSpec extends FreeSpec {
+class Round1Spec extends FreeSpec {
 
   "problem 1" - {
 
