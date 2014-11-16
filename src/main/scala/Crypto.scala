@@ -13,7 +13,7 @@ object Crypto {
   }
 
   def solveRotatingKey(bytes: Array[Byte], key: String): String =
-    bytes zip Stream.continually(key.toCharArray).flatten map xorTuple map (_.toChar) mkString ""
+    Helpers.intsToString(bytes zip Stream.continually(key.toCharArray).flatten map xorTuple)
 
   private def xorTuple: PartialFunction[(Byte, Char), Int] = {
     case (a, b) => a ^ b
@@ -27,7 +27,7 @@ object Crypto {
 
   def solveSingleByteXor(bytes: Array[Byte]): Char = {
     val found = Helpers.alphabet map { char =>
-      val stringified = Xor.xorWith(bytes, char) map (_.toChar) mkString ""
+      val stringified = Helpers.intsToString(Xor.xorWith(bytes, char))
       (char.toChar, Helpers.scoreString(stringified))
     } maxBy (_._2)
 

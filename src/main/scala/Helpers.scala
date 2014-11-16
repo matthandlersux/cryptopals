@@ -9,6 +9,12 @@ object Helpers {
 	private val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
 	private val freqMap = freq.reverse.zipWithIndex.toMap
 
+	def bytesToString(bytes: Array[Byte]): String =
+		bytes map (_.toChar) mkString ""
+
+	def intsToString(ints: Array[Int]): String =
+		ints map (_.toChar) mkString ""
+
 	def hexToBytes(string: String): Array[Byte] =
 		(string grouped 2 map parseHex map (_.toByte)).toArray
 
