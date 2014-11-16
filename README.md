@@ -4,6 +4,6 @@ problems: http://cryptopals.com/
 
 # Setup
 
-- install scala 2.11.0
-- install sbt v 0.12.4
+- install `scala v2.11.0`
+- install `sbt v0.13.6`
 - run tests with `sbt test`
