@@ -70,4 +70,12 @@ class RoundOneSpec extends FreeSpec {
 
   }
 
+  "problem 8" - {
+
+    "finds the ECB encoded hex string" in {
+      println(Round1.problem8)
+    }
+
+  }
+
 }

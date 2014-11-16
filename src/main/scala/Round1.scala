@@ -74,8 +74,14 @@ object Round1 {
     Crypto.decryptAESECB(bytes, "YELLOW SUBMARINE")
   }
 
-  def problem8: Unit = {
+  def problem8 = {
+    val hexes = Data.problem8.split("\n")
+    val found = hexes.zipWithIndex map { case (hexString, i) =>
+      val bytes = hexString grouped 2 map Helpers.parseHex
+      (i, bytes, bytes.toSet.size)
+    } maxBy (_._3)
 
+    Crypto.decryptAESECB(found._2.toArray map (_.toByte), "YELLOW SUBMARINE")
   }
 
 }
