@@ -29,7 +29,7 @@ object Round1 {
 
   def problem4: (Char, String, Int) = {
     (for {
-      line <- Data.problem4.split("\n")
+      line <- Data.Round1.problem4.split("\n")
       char <- Helpers.alphabet
     } yield {
       val intList = Xor.xorWith(line, char)
@@ -49,7 +49,7 @@ object Round1 {
   def problem6: String = {
     val keySizes = Range(2, 41)
 
-    val bytes = Helpers.decode64(Data.problem6)
+    val bytes = Helpers.decode64(Data.Round1.problem6)
     val keySize = getKeySize(bytes, keySizes)
 
     val transposed = Helpers.transposeGrouped(bytes, keySize)
@@ -70,18 +70,20 @@ object Round1 {
     } minBy (_._2))._1
 
   def problem7: String = {
-    val bytes = Helpers.decode64(Data.problem7)
+    val bytes = Helpers.decode64(Data.Round1.problem7)
     Crypto.decryptAESECB(bytes, "YELLOW SUBMARINE")
   }
 
   def problem8 = {
-    val hexes = Data.problem8.split("\n")
+    val hexes = Data.Round1.problem8.split("\n")
     val found = hexes.zipWithIndex map { case (hexString, i) =>
       val bytes = hexString grouped 2 map Helpers.parseHex
+      scala.util.Try {
+        println(Crypto.decryptAESECB(bytes.toArray map (_.toByte), "YELLOW SUBMARINE"))
+      }
       (i, bytes, bytes.toSet.size)
     } maxBy (_._3)
 
-    Crypto.decryptAESECB(found._2.toArray map (_.toByte), "YELLOW SUBMARINE")
   }
 
 }
