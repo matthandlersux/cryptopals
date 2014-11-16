@@ -69,9 +69,9 @@ object Round1 {
       (keySize, distances.sum/(keySize * distances.size))
     } minBy (_._2))._1
 
-  def problem7: Unit = {
-    val key = "YELLOW SUBMARINE"
+  def problem7: String = {
     val bytes = Helpers.decode64(Data.problem7)
+    Crypto.decryptAESECB(bytes, "YELLOW SUBMARINE")
   }
 
   def problem8: Unit = {

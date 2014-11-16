@@ -61,4 +61,13 @@ class RoundOneSpec extends FreeSpec {
 
   }
 
+  "problem 7" - {
+
+    "decodes AES ECB encrypted text" in {
+      val fixture = Source.fromFile("src/test/scala/fixtures/problem6.output.txt").mkString
+      Round1.problem7 shouldEqual fixture
+    }
+
+  }
+
 }

@@ -2,7 +2,20 @@ package crypto
 
 import helpers.Helpers
 
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
+
 object Crypto {
+
+  def decryptAESECB(bytes: Array[Byte], key: String): String = {
+    val algorithm = "AES"
+    val cipher = algorithm + "/ECB/PKCS5Padding"
+    val secretKey = new SecretKeySpec(key.getBytes("UTF8"), algorithm)
+
+    val decryptor = Cipher.getInstance(cipher)
+    decryptor.init(Cipher.DECRYPT_MODE, secretKey)
+    Helpers.bytesToString(decryptor.doFinal(bytes))
+  }
 
   def hashWithRotatingKey(bytes: Array[Byte], key: String): String =
     bytes zip Helpers.rotatingKey(key) map xorTuple map byteToHex mkString ""
