@@ -1,4 +1,4 @@
-# Scala Solutions to Cryptopals
+# Scala Solutions to Cryptopals [![Circle CI](https://circleci.com/gh/matthandlersux/cryptopals/tree/master.png?style=shield)](https://circleci.com/gh/matthandlersux/cryptopals/tree/master)
 
 problems: http://cryptopals.com/
 
