@@ -28,7 +28,9 @@ class Round2Spec extends FreeSpec {
   "problem 11" - {
 
     "blah" in {
-      Round2.problem11
+      val score = Round2.problem11
+      score should be < 0.6
+      score should be > 0.4
     }
 
   }

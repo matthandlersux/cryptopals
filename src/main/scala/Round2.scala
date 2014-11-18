@@ -28,5 +28,15 @@ object Round2 {
     val iv = (Seq.fill(16)(0) map (_.toByte)).toArray
     val data = Crypto.decryptCBC(bytes, key, iv)
     assert((bytes map (_.toChar) mkString) == Crypto.encryptCBC((data map (_.toByte)).toArray, key, iv))
+
+    val string = Seq.fill(16 * 50)("ab") mkString ""
+    val totalRuns = 1000
+    val ecbRuns = (0 to totalRuns) map { _ =>
+      val encrypted = Crypto.randomlyEncrypt(string) map (_.toByte)
+      val grouped = (encrypted grouped 16).toSeq
+      grouped.toSet.size.toDouble/grouped.size
+    } filter (_ < 0.2)
+
+    ecbRuns.size.toDouble/totalRuns
   }
 }

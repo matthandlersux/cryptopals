@@ -4,11 +4,35 @@ import helpers.Helpers
 
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
+import scala.util.Random
 
 object Crypto {
 
   def findRepeatingBlockScore(string: String, size: Int): Double =
     (string grouped size).toSet.size.toDouble/size
+
+  def findRepeatingBlockScore[T](array: Array[T], size: Int): Double =
+    (array grouped size).toSet.size.toDouble/size
+
+  def randomlyEncrypt(string: String): String = {
+    val keySize = 16
+    val randomKey = Helpers.randomKey(keySize) map (_.toChar) mkString ""
+    val bytes = (string map (_.toByte)).toArray
+    val input = randomPad(5, 5) ++ bytes ++ randomPad(5, 5)
+    val paddingNeeded = input.size % keySize match {
+      case 0 => 0
+      case i => input.size - i
+    }
+    val paddedInput = Helpers.padBlock(input, paddingNeeded, Byte.box(0))
+
+    if (Random.nextBoolean)
+      encryptCBC(paddedInput, randomKey, Helpers.randomKey(keySize))
+    else
+      encryptAESECB(paddedInput, randomKey)
+  }
+
+  private def randomPad(base: Int, variable: Int): Array[Byte] =
+    Helpers.randomKey(base) ++ Helpers.randomKey(Random.nextInt(variable + 1))
 
   private case class CBCAcc(iv: Array[Byte], output: Array[Byte] = Array())
 
@@ -40,7 +64,8 @@ object Crypto {
   private def aesECB(bytes: Array[Byte], key: String, mode: Int): String = {
     val algorithm = "AES"
     val cipherName = algorithm + "/ECB/NoPadding"
-    val secretKey = new SecretKeySpec(key.getBytes("UTF8"), algorithm)
+    val keyBytes = (key map (_.toByte)).toArray
+    val secretKey = new SecretKeySpec(keyBytes, algorithm)
 
     val cipher = Cipher.getInstance(cipherName)
     cipher.init(mode, secretKey)

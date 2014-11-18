@@ -1,6 +1,7 @@
 package helpers
 
 import sun.misc.{BASE64Encoder, BASE64Decoder}
+import scala.util.Random
 
 object Helpers {
 
@@ -8,6 +9,9 @@ object Helpers {
 
   private val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
   private val freqMap = freq.reverse.zipWithIndex.toMap
+
+  def randomKey(size: Int): Array[Byte] =
+    Array.fill(size)(Random.nextInt(256)) map (_.toByte)
 
   def padBlock(bytes: Array[Byte], length: Int, padChar: Byte = Byte.box(4)): Array[Byte] =
     ((0 until length) map (bytes lift _ getOrElse padChar)).toArray
