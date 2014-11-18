@@ -74,16 +74,13 @@ object Round1 {
     Crypto.decryptAESECB(bytes, "YELLOW SUBMARINE")
   }
 
-  def problem8 = {
+  def problem8: Int = {
     val hexes = Data.Round1.problem8.split("\n")
-    val found = hexes.zipWithIndex map { case (hexString, i) =>
-      val bytes = hexString grouped 2 map Helpers.parseHex
-      scala.util.Try {
-        println(Crypto.decryptAESECB(bytes.toArray map (_.toByte), "YELLOW SUBMARINE"))
-      }
-      (i, bytes, bytes.toSet.size)
-    } maxBy (_._3)
+    val found = hexes.zipWithIndex map { case (hex, i) =>
+      (i, Crypto.findRepeatingBlockScore(hex, 16))
+    } minBy (_._2)
 
+    found._1
   }
 
 }

@@ -7,6 +7,9 @@ import javax.crypto.spec.SecretKeySpec
 
 object Crypto {
 
+  def findRepeatingBlockScore(string: String, size: Int): Double =
+    (string grouped size).toSet.size.toDouble/size
+
   def decryptAESECB(bytes: Array[Byte], key: String): String = {
     val algorithm = "AES"
     val cipherName = algorithm + "/ECB/PKCS5Padding"

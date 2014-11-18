@@ -73,7 +73,7 @@ class Round1Spec extends FreeSpec {
   "problem 8" - {
 
     "finds the ECB encoded hex string" in {
-      println(Round1.problem8)
+      Round1.problem8 shouldEqual 132
     }
 
   }
