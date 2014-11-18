@@ -5,6 +5,9 @@ import scala.util.Try
 
 object Xor {
 
+  def xorBytes(a: Array[Byte], b: Array[Byte]): Array[Byte] =
+    a zip Stream.continually(b).flatten map { case (a, b) => a ^ b } map (_.toByte)
+
   def xorStrings(a: String, b: String): String =
     toIntArray(a) zip toIntArray(b) map {
       case (a, b) => a ^ b

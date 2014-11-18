@@ -10,14 +10,31 @@ object Crypto {
   def findRepeatingBlockScore(string: String, size: Int): Double =
     (string grouped size).toSet.size.toDouble/size
 
-  def decryptAESECB(bytes: Array[Byte], key: String): String = {
+  private case class CBCAcc(iv: Array[Byte], output: Array[Byte] = Array())
+
+  def decryptCBC(bytes: Array[Byte], key: String, iv: Array[Byte]): String = {
+    val cbc = (bytes grouped key.size).foldLeft(CBCAcc(iv)) { case (CBCAcc(vector, output), cipherText) =>
+      val decrypted = decryptAESECB(cipherText, key) map (_.toByte)
+      CBCAcc(cipherText, output ++ Xor.xorBytes(decrypted.toArray, vector))
+    }
+
+    cbc.output map (_.toChar) mkString ""
+  }
+
+  def encryptAESECB(bytes: Array[Byte], key: String): String =
+    aesECB(bytes, key, Cipher.ENCRYPT_MODE)
+
+  def decryptAESECB(bytes: Array[Byte], key: String): String =
+    aesECB(bytes, key, Cipher.DECRYPT_MODE)
+
+  private def aesECB(bytes: Array[Byte], key: String, mode: Int): String = {
     val algorithm = "AES"
-    val cipherName = algorithm + "/ECB/PKCS5Padding"
+    val cipherName = algorithm + "/ECB/NoPadding"
     val secretKey = new SecretKeySpec(key.getBytes("UTF8"), algorithm)
 
-    val decryptor = Cipher.getInstance(cipherName)
-    decryptor.init(Cipher.DECRYPT_MODE, secretKey)
-    Helpers.bytesToString(decryptor.doFinal(bytes))
+    val cipher = Cipher.getInstance(cipherName)
+    cipher.init(mode, secretKey)
+    Helpers.bytesToString(cipher.doFinal(bytes))
   }
 
   def hashWithRotatingKey(bytes: Array[Byte], key: String): String =

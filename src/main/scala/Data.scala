@@ -17,7 +17,7 @@ object Data {
   }
 
   object Round2 extends FileReader("round2") {
-  	lazy val problem2 = readFile("problem2.txt")
+  	lazy val problem10 = readFile("problem10.txt")
   }
 
 }
