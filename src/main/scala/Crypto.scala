@@ -21,6 +21,16 @@ object Crypto {
     cbc.output map (_.toChar) mkString ""
   }
 
+  def encryptCBC(bytes: Array[Byte], key: String, iv: Array[Byte]): String = {
+    val cbc = (bytes grouped key.size).foldLeft(CBCAcc(iv)) { case (CBCAcc(vector, output), plainText) =>
+      val xored = Xor.xorBytes(plainText, vector)
+      val cipherText = (encryptAESECB(xored, key) map (_.toByte)).toArray
+      CBCAcc(cipherText, output ++ cipherText)
+    }
+
+    cbc.output map (_.toChar) mkString ""
+  }
+
   def encryptAESECB(bytes: Array[Byte], key: String): String =
     aesECB(bytes, key, Cipher.ENCRYPT_MODE)
 

@@ -22,4 +22,11 @@ object Round2 {
     Crypto.decryptCBC(bytes2, key, (Seq.fill(16)(0) map (_.toByte)).toArray)
   }
 
+  def problem11 = {
+    val key = "YELLOW SUBMARINE"
+    val bytes = Helpers.decode64(Data.Round2.problem10)
+    val iv = (Seq.fill(16)(0) map (_.toByte)).toArray
+    val data = Crypto.decryptCBC(bytes, key, iv)
+    assert((bytes map (_.toChar) mkString) == Crypto.encryptCBC((data map (_.toByte)).toArray, key, iv))
+  }
 }

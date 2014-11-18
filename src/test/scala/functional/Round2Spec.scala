@@ -25,4 +25,11 @@ class Round2Spec extends FreeSpec {
 
   }
 
+  "problem 11" - {
+
+    "blah" in {
+      Round2.problem11
+    }
+
+  }
 }
