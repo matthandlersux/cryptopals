@@ -71,7 +71,7 @@ object Round1 {
 
   def problem7: String = {
     val bytes = Helpers.decode64(Data.Round1.problem7)
-    bytes grouped 16 map (Crypto.decryptAESECB(_, "YELLOW SUBMARINE")) mkString ""
+    bytes grouped 16 map (Crypto.decryptECB(_, "YELLOW SUBMARINE")) mkString ""
   }
 
   def problem8: Int = {

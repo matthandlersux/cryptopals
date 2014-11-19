@@ -1,6 +1,6 @@
 package rounds
 
-import crypto.Crypto
+import crypto.{Oracle, Crypto}
 import helpers.Helpers
 import data.Data
 
@@ -15,8 +15,8 @@ object Round2 {
     val bytes1 = Helpers.decode64(Data.Round1.problem7)
     val key = "YELLOW SUBMARINE"
 
-    val decrypted = Crypto.decryptAESECB(bytes1, key)
-    assert(Helpers.bytesToString(bytes1) == Crypto.encryptAESECB(decrypted.getBytes, key))
+    val decrypted = Crypto.decryptECB(bytes1, key)
+    assert(Helpers.bytesToString(bytes1) == Crypto.encryptECB(decrypted.getBytes, key))
 
     val bytes2 = Helpers.decode64(Data.Round2.problem10)
     Crypto.decryptCBC(bytes2, key, (Seq.fill(16)(0) map (_.toByte)).toArray)
@@ -32,7 +32,7 @@ object Round2 {
     val string = Seq.fill(16 * 50)("ab") mkString ""
     val totalRuns = 1000
     val ecbRuns = (0 to totalRuns) map { _ =>
-      val encrypted = Crypto.randomlyEncrypt(string) map (_.toByte)
+      val encrypted = Oracle.ecbCBCOracle(string) map (_.toByte)
       val grouped = (encrypted grouped 16).toSeq
       grouped.toSet.size.toDouble/grouped.size
     } filter (_ < 0.2)
@@ -40,12 +40,7 @@ object Round2 {
     ecbRuns.size.toDouble/totalRuns
   }
 
-  def problem12 = {
-    val bytes = Helpers.decode64(Data.Round2.problem12)
-    val key = Helpers.randomKey(16)
-    def blackBox(string: String): String =
-      Crypto.encryptAESECB((string map (_.toByte)).toArray ++ bytes, key map (_.toChar) mkString "")
-
-    Crypto.decryptECBBlackBox(16, blackBox)
+  def problem12: String = {
+    Crypto.decryptECBBlackBox(16, Oracle.stringPrependOracle)
   }
 }

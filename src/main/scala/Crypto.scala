@@ -14,22 +14,6 @@ object Crypto {
   def findRepeatingBlockScore[T](array: Array[T], size: Int): Double =
     (array grouped size).toSet.size.toDouble/size
 
-  def randomlyEncrypt(string: String): String = {
-    val keySize = 16
-    val randomKey = Helpers.randomKey(keySize) map (_.toChar) mkString ""
-    val bytes = (string map (_.toByte)).toArray
-    val input = randomPad(5, 5) ++ bytes ++ randomPad(5, 5)
-    val paddedInput = Helpers.padToMultiple(input, keySize, Byte.box(0))
-
-    if (Random.nextBoolean)
-      encryptCBC(paddedInput, randomKey, Helpers.randomKey(keySize))
-    else
-      encryptAESECB(paddedInput, randomKey)
-  }
-
-  private def randomPad(base: Int, variable: Int): Array[Byte] =
-    Helpers.randomKey(base) ++ Helpers.randomKey(Random.nextInt(variable + 1))
-
   private case class DecryptECB(padding: String, acc: String)
 
   def decryptECBBlackBox(blockSize: Int, blackBox: String => String): String = {
@@ -50,7 +34,7 @@ object Crypto {
 
   def decryptCBC(bytes: Array[Byte], key: String, iv: Array[Byte]): String = {
     val cbc = (bytes grouped key.size).foldLeft(CBCAcc(iv)) { case (CBCAcc(vector, output), cipherText) =>
-      val decrypted = decryptAESECB(cipherText, key) map (_.toByte)
+      val decrypted = decryptECB(cipherText, key) map (_.toByte)
       CBCAcc(cipherText, output ++ Xor.xorBytes(decrypted.toArray, vector))
     }
 
@@ -60,17 +44,17 @@ object Crypto {
   def encryptCBC(bytes: Array[Byte], key: String, iv: Array[Byte]): String = {
     val cbc = (bytes grouped key.size).foldLeft(CBCAcc(iv)) { case (CBCAcc(vector, output), plainText) =>
       val xored = Xor.xorBytes(plainText, vector)
-      val cipherText = (encryptAESECB(xored, key) map (_.toByte)).toArray
+      val cipherText = (encryptECB(xored, key) map (_.toByte)).toArray
       CBCAcc(cipherText, output ++ cipherText)
     }
 
     cbc.output map (_.toChar) mkString ""
   }
 
-  def encryptAESECB(bytes: Array[Byte], key: String): String =
+  def encryptECB(bytes: Array[Byte], key: String): String =
     aesECB(bytes, key, Cipher.ENCRYPT_MODE)
 
-  def decryptAESECB(bytes: Array[Byte], key: String): String =
+  def decryptECB(bytes: Array[Byte], key: String): String =
     aesECB(bytes, key, Cipher.DECRYPT_MODE)
 
   private def aesECB(bytes: Array[Byte], key: String, mode: Int): String = {
