@@ -6,15 +6,14 @@ import data.Data
 
 object Round2 {
 
+  private val key = "YELLOW SUBMARINE"
+
 	def problem9: String = {
-		val string = "YELLOW SUBMARINE"
-		Helpers.padBlock(string.getBytes, 20) map (_.toChar) mkString ""
+		Helpers.padBlock(key.getBytes, 20) map (_.toChar) mkString ""
 	}
 
   def problem10: String = {
     val bytes1 = Helpers.decode64(Data.Round1.problem7)
-    val key = "YELLOW SUBMARINE"
-
     val decrypted = Crypto.decryptECB(bytes1, key)
     assert(Helpers.bytesToString(bytes1) == Crypto.encryptECB(decrypted.getBytes, key))
 
@@ -23,7 +22,6 @@ object Round2 {
   }
 
   def problem11: Double = {
-    val key = "YELLOW SUBMARINE"
     val bytes = Helpers.decode64(Data.Round2.problem10)
     val iv = (Seq.fill(16)(0) map (_.toByte)).toArray
     val data = Crypto.decryptCBC(bytes, key, iv)
