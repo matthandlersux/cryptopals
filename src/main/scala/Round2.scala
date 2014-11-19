@@ -1,12 +1,12 @@
 package rounds
 
 import crypto.{Oracle, Crypto}
-import helpers.Helpers
+import helpers.{Transformers, Helpers}
 import data.Data
 
 object Round2 {
 
-  import Helpers.bytesToString
+  import Transformers.bytesToString
 
   private val key = "YELLOW SUBMARINE"
 
@@ -15,16 +15,16 @@ object Round2 {
 	}
 
   def problem10: String = {
-    val bytes1 = Helpers.decode64(Data.Round1.problem7)
+    val bytes1 = Transformers.decode64(Data.Round1.problem7)
     val decrypted = Crypto.decryptECB(bytes1, key)
     assert(bytesToString(bytes1) == Crypto.encryptECB(decrypted.getBytes, key))
 
-    val bytes2 = Helpers.decode64(Data.Round2.problem10)
+    val bytes2 = Transformers.decode64(Data.Round2.problem10)
     Crypto.decryptCBC(bytes2, key, (Seq.fill(16)(0) map (_.toByte)).toArray)
   }
 
   def problem11: Double = {
-    val bytes = Helpers.decode64(Data.Round2.problem10)
+    val bytes = Transformers.decode64(Data.Round2.problem10)
     val iv = (Seq.fill(16)(0) map (_.toByte)).toArray
     val data = Crypto.decryptCBC(bytes, key, iv)
     assert(bytesToString(bytes) == Crypto.encryptCBC((data map (_.toByte)).toArray, key, iv))

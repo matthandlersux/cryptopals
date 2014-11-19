@@ -1,6 +1,6 @@
 package crypto
 
-import helpers.Helpers
+import helpers.{Transformers, Helpers}
 import scala.util.Try
 
 object Xor {
@@ -16,7 +16,7 @@ object Xor {
     } map (_.toHexString) mkString ""
 
   private def hexStringToIntArray(string: String): Iterator[Int] =
-    string grouped 2 map Helpers.parseHex
+    string grouped 2 map Transformers.parseHex
 
   def xorWith(hash: String, char: Int): Array[Int] =
     hash.grouped(2).map(hex => Try(Integer.parseInt(hex, 16)) getOrElse 0).map(_ ^ char).toArray

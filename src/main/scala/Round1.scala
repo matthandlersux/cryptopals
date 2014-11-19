@@ -2,11 +2,11 @@ package rounds
 
 import crypto.{Crypto, Xor}
 import data.Data
-import helpers.Helpers
+import helpers.{Transformers, Helpers}
+import Transformers.{bytesToString, intsToString}
 
 object Round1 {
 
-  import Helpers.{bytesToString, intsToString}
 
   def problem1: String =
     encodeHexStringToBase64(
@@ -14,7 +14,7 @@ object Round1 {
     )
 
   private def encodeHexStringToBase64(string: String): String =
-    Helpers.encode64((string grouped 2 map Helpers.parseHex).toSeq)
+    Transformers.encode64((string grouped 2 map Transformers.parseHex).toSeq)
 
   def problem2: String = {
     val string1 = "1c0111001f010100061a024b53535009181c"
@@ -24,7 +24,7 @@ object Round1 {
 
   def problem3: (Char, String) = {
     val hash = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    val key = Crypto.solveSingleByteXor(Helpers.hexToBytes(hash))
+    val key = Crypto.solveSingleByteXor(Transformers.hexToBytes(hash))
 
     (key, intsToString(Xor.xorWith(hash, key)))
   }
@@ -51,7 +51,7 @@ object Round1 {
   def problem6: String = {
     val keySizes = Range(2, 41)
 
-    val bytes = Helpers.decode64(Data.Round1.problem6)
+    val bytes = Transformers.decode64(Data.Round1.problem6)
     val keySize = getKeySize(bytes, keySizes)
 
     val transposed = Helpers.transposeGrouped(bytes, keySize)
@@ -72,7 +72,7 @@ object Round1 {
     } minBy (_._2))._1
 
   def problem7: String = {
-    val bytes = Helpers.decode64(Data.Round1.problem7)
+    val bytes = Transformers.decode64(Data.Round1.problem7)
     bytes grouped 16 map (Crypto.decryptECB(_, "YELLOW SUBMARINE")) mkString ""
   }
 

@@ -3,24 +3,7 @@ package helpers
 import sun.misc.{BASE64Encoder, BASE64Decoder}
 import scala.util.Random
 
-object Helpers {
-
-  val alphabet = Range(0, 256)
-
-  private val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
-  private val freqMap = freq.reverse.zipWithIndex.toMap
-
-  def randomKey(size: Int): Array[Byte] =
-    Array.fill(size)(Random.nextInt(256)) map (_.toByte)
-
-  def padToMultiple(bytes: Array[Byte], factor: Int, padChar: Byte = Byte.box(0)): Array[Byte] =
-    bytes.size % factor match {
-      case 0 => bytes
-      case i => padBlock(bytes, bytes.size + factor - i, padChar)
-    }
-
-  def padBlock(bytes: Array[Byte], length: Int, padChar: Byte = Byte.box(4)): Array[Byte] =
-    ((0 until length) map (bytes lift _ getOrElse padChar)).toArray
+object Transformers {
 
   def bytesToString(bytes: Array[Byte]): String =
     bytes map (_.toChar) mkString ""
@@ -39,6 +22,30 @@ object Helpers {
 
   def decode64(string: String): Array[Byte] =
     new BASE64Decoder().decodeBuffer(string)
+
+  def parseHex(string: String): Int =
+    Integer.parseInt(string, 16)
+
+}
+
+object Helpers {
+
+  val alphabet = Range(0, 256)
+
+  private val freq = "etetaoin shrdlcumwfgypbvkjxqz".toCharArray
+  private val freqMap = freq.reverse.zipWithIndex.toMap
+
+  def randomKey(size: Int): Array[Byte] =
+    Array.fill(size)(Random.nextInt(256)) map (_.toByte)
+
+  def padToMultiple(bytes: Array[Byte], factor: Int, padChar: Byte = Byte.box(0)): Array[Byte] =
+    bytes.size % factor match {
+      case 0 => bytes
+      case i => padBlock(bytes, bytes.size + factor - i, padChar)
+    }
+
+  def padBlock(bytes: Array[Byte], length: Int, padChar: Byte = Byte.box(4)): Array[Byte] =
+    ((0 until length) map (bytes lift _ getOrElse padChar)).toArray
 
   def transposeGrouped[A](list: Seq[A], size: Int): Seq[Seq[A]] = {
     val grouped = (list grouped size).toSeq
@@ -69,9 +76,6 @@ object Helpers {
     val byte = i.toByte
     (0 to 7).map(i => (byte >>> i) & 1).sum
   }
-
-  def parseHex(string: String): Int =
-    Integer.parseInt(string, 16)
 
   def rotatingKey(string: String): Stream[Char] =
     Stream.continually(string.toCharArray).flatten

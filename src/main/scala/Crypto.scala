@@ -1,6 +1,6 @@
 package crypto
 
-import helpers.Helpers
+import helpers.{Transformers, Helpers}
 
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -77,7 +77,7 @@ object Crypto {
 
     val cipher = Cipher.getInstance(cipherName)
     cipher.init(mode, secretKey)
-    Helpers.bytesToString(cipher.doFinal(padded))
+    Transformers.bytesToString(cipher.doFinal(padded))
   }
 
   def hashWithRotatingKey(bytes: Array[Byte], key: String): String =
@@ -89,7 +89,7 @@ object Crypto {
   }
 
   def solveRotatingKey(bytes: Array[Byte], key: String): String =
-    Helpers.intsToString(bytes zip Stream.continually(key.toCharArray).flatten map xorTuple)
+    Transformers.intsToString(bytes zip Stream.continually(key.toCharArray).flatten map xorTuple)
 
   private def xorTuple: PartialFunction[(Byte, Char), Int] = {
     case (a, b) => a ^ b
@@ -103,7 +103,7 @@ object Crypto {
 
   def solveSingleByteXor(bytes: Array[Byte]): Char = {
     val found = Helpers.alphabet map { char =>
-      val stringified = Helpers.intsToString(Xor.xorWith(bytes, char))
+      val stringified = Transformers.intsToString(Xor.xorWith(bytes, char))
       (char.toChar, Helpers.scoreString(stringified))
     } maxBy (_._2)
 

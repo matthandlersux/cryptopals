@@ -1,6 +1,6 @@
 package crypto
 
-import helpers.Helpers
+import helpers.{Transformers, Helpers}
 import data.Data
 
 import scala.util.Random
@@ -8,7 +8,7 @@ import scala.util.Random
 object Oracle {
 
   def stringPrependOracle: String => String = {
-    val bytes = Helpers.decode64(Data.Round2.problem12)
+    val bytes = Transformers.decode64(Data.Round2.problem12)
     val key = Helpers.randomKey(16)
     (string: String) => Crypto.encryptECB((string map (_.toByte)).toArray ++ bytes, key map (_.toChar) mkString "")
   }
