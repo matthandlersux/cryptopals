@@ -19,7 +19,7 @@ object Round1 {
   def problem2: String = {
     val string1 = "1c0111001f010100061a024b53535009181c"
     val string2 = "686974207468652062756c6c277320657965"
-    Xor.xorStrings(string1, string2)
+    Xor.xorHexStrings(string1, string2)
   }
 
   def problem3: (Char, String) = {

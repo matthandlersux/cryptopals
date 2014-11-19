@@ -6,14 +6,16 @@ import scala.util.Try
 object Xor {
 
   def xorBytes(a: Array[Byte], b: Array[Byte]): Array[Byte] =
-    a zip Stream.continually(b).flatten map { case (a, b) => a ^ b } map (_.toByte)
+    a zip Stream.continually(b).flatten map {
+      case (a, b) => a ^ b
+    } map (_.toByte)
 
-  def xorStrings(a: String, b: String): String =
-    toIntArray(a) zip toIntArray(b) map {
+  def xorHexStrings(a: String, b: String): String =
+    hexStringToIntArray(a) zip hexStringToIntArray(b) map {
       case (a, b) => a ^ b
     } map (_.toHexString) mkString ""
 
-  private def toIntArray(string: String): Iterator[Int] =
+  private def hexStringToIntArray(string: String): Iterator[Int] =
     string grouped 2 map Helpers.parseHex
 
   def xorWith(hash: String, char: Int): Array[Int] =
