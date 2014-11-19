@@ -6,16 +6,18 @@ import data.Data
 
 object Round2 {
 
+  import Helpers.bytesToString
+
   private val key = "YELLOW SUBMARINE"
 
 	def problem9: String = {
-		Helpers.padBlock(key.getBytes, 20) map (_.toChar) mkString ""
+		bytesToString(Helpers.padBlock(key.getBytes, 20))
 	}
 
   def problem10: String = {
     val bytes1 = Helpers.decode64(Data.Round1.problem7)
     val decrypted = Crypto.decryptECB(bytes1, key)
-    assert(Helpers.bytesToString(bytes1) == Crypto.encryptECB(decrypted.getBytes, key))
+    assert(bytesToString(bytes1) == Crypto.encryptECB(decrypted.getBytes, key))
 
     val bytes2 = Helpers.decode64(Data.Round2.problem10)
     Crypto.decryptCBC(bytes2, key, (Seq.fill(16)(0) map (_.toByte)).toArray)
@@ -25,9 +27,9 @@ object Round2 {
     val bytes = Helpers.decode64(Data.Round2.problem10)
     val iv = (Seq.fill(16)(0) map (_.toByte)).toArray
     val data = Crypto.decryptCBC(bytes, key, iv)
-    assert((bytes map (_.toChar) mkString) == Crypto.encryptCBC((data map (_.toByte)).toArray, key, iv))
+    assert(bytesToString(bytes) == Crypto.encryptCBC((data map (_.toByte)).toArray, key, iv))
 
-    val string = Seq.fill(16 * 50)("ab") mkString ""
+    val string = "ab" * (16 * 100)
     val totalRuns = 1000
     val ecbRuns = (0 to totalRuns) map { _ =>
       val encrypted = Oracle.ecbCBCOracle(string) map (_.toByte)

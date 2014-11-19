@@ -6,6 +6,8 @@ import helpers.Helpers
 
 object Round1 {
 
+  import Helpers.{bytesToString, intsToString}
+
   def problem1: String =
     encodeHexStringToBase64(
       "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
@@ -24,7 +26,7 @@ object Round1 {
     val hash = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
     val key = Crypto.solveSingleByteXor(Helpers.hexToBytes(hash))
 
-    (key, Xor.xorWith(hash, key) map (_.toChar) mkString "")
+    (key, intsToString(Xor.xorWith(hash, key)))
   }
 
   def problem4: (Char, String, Int) = {
@@ -33,7 +35,7 @@ object Round1 {
       char <- Helpers.alphabet
     } yield {
       val intList = Xor.xorWith(line, char)
-      val stringified = intList map (_.toChar) mkString ""
+      val stringified = intsToString(intList)
       (char.toChar, stringified, Helpers.scoreString(stringified))
     }) maxBy (_._3)
   }
