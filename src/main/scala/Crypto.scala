@@ -73,10 +73,7 @@ object Crypto {
     val cipherName = algorithm + "/ECB/NoPadding"
     val keyBytes = (key map (_.toByte)).toArray
     val secretKey = new SecretKeySpec(keyBytes, algorithm)
-    val padded = bytes.size % key.size match {
-      case 0 => bytes
-      case i => Helpers.padBlock(bytes, bytes.size + (key.size - i), Byte.box(0))
-    }
+    val padded = Helpers.padToMultiple(bytes, key.size, Byte.box(0))
 
     val cipher = Cipher.getInstance(cipherName)
     cipher.init(mode, secretKey)

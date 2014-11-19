@@ -16,7 +16,7 @@ object Helpers {
   def padToMultiple(bytes: Array[Byte], factor: Int, padChar: Byte = Byte.box(0)): Array[Byte] =
     bytes.size % factor match {
       case 0 => bytes
-      case i => padBlock(bytes, bytes.size - i, padChar)
+      case i => padBlock(bytes, bytes.size + factor - i, padChar)
     }
 
   def padBlock(bytes: Array[Byte], length: Int, padChar: Byte = Byte.box(4)): Array[Byte] =
