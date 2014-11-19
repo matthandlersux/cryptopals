@@ -27,10 +27,19 @@ class Round2Spec extends FreeSpec {
 
   "problem 11" - {
 
-    "blah" in {
+    "finds that half of the runs were ECB encrypted" in {
       val score = Round2.problem11
       score should be < 0.6
       score should be > 0.4
+    }
+
+  }
+
+  "problem 12" - {
+
+    "can read an unknown string via ECB encryption" in {
+      val fixture = Source.fromFile("src/test/scala/fixtures/problem12.output.txt").mkString
+      Round2.problem12 shouldEqual fixture
     }
 
   }

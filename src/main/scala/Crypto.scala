@@ -8,6 +8,23 @@ import scala.util.Random
 
 object Crypto {
 
+  def decryptECBEncryptedString(unknownString: Array[Byte], blockSize: Int): String = {
+    val randomKey = Helpers.randomKey(blockSize) map (_.toChar) mkString ""
+
+    unknownString flatMap { char =>
+      val prefix = (("A" * (blockSize - 1)) map (_.toByte)).toArray
+      val bait = prefix :+ char
+      Random.shuffle(0 to 256) find { possibleChar =>
+        val known = prefix :+ possibleChar.toByte
+        val decrypted = decryptAESECB(known ++ bait, randomKey)
+        val first = decrypted take blockSize
+        val second = decrypted drop blockSize take blockSize
+
+        first == second
+      }
+    } map (_.toChar) mkString ""
+  }
+
   def findRepeatingBlockScore(string: String, size: Int): Double =
     (string grouped size).toSet.size.toDouble/size
 
@@ -19,11 +36,7 @@ object Crypto {
     val randomKey = Helpers.randomKey(keySize) map (_.toChar) mkString ""
     val bytes = (string map (_.toByte)).toArray
     val input = randomPad(5, 5) ++ bytes ++ randomPad(5, 5)
-    val paddingNeeded = input.size % keySize match {
-      case 0 => 0
-      case i => input.size - i
-    }
-    val paddedInput = Helpers.padBlock(input, paddingNeeded, Byte.box(0))
+    val paddedInput = Helpers.padToMultiple(input, keySize, Byte.box(0))
 
     if (Random.nextBoolean)
       encryptCBC(paddedInput, randomKey, Helpers.randomKey(keySize))

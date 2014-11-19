@@ -22,7 +22,7 @@ object Round2 {
     Crypto.decryptCBC(bytes2, key, (Seq.fill(16)(0) map (_.toByte)).toArray)
   }
 
-  def problem11 = {
+  def problem11: Double = {
     val key = "YELLOW SUBMARINE"
     val bytes = Helpers.decode64(Data.Round2.problem10)
     val iv = (Seq.fill(16)(0) map (_.toByte)).toArray
@@ -38,5 +38,10 @@ object Round2 {
     } filter (_ < 0.2)
 
     ecbRuns.size.toDouble/totalRuns
+  }
+
+  def problem12: String = {
+    val bytes = Helpers.decode64(Data.Round2.problem12)
+    Crypto.decryptECBEncryptedString(bytes, 16)
   }
 }

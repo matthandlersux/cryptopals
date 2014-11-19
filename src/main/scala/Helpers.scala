@@ -13,6 +13,12 @@ object Helpers {
   def randomKey(size: Int): Array[Byte] =
     Array.fill(size)(Random.nextInt(256)) map (_.toByte)
 
+  def padToMultiple(bytes: Array[Byte], factor: Int, padChar: Byte = Byte.box(0)): Array[Byte] =
+    bytes.size % factor match {
+      case 0 => bytes
+      case i => padBlock(bytes, bytes.size - i, padChar)
+    }
+
   def padBlock(bytes: Array[Byte], length: Int, padChar: Byte = Byte.box(4)): Array[Byte] =
     ((0 until length) map (bytes lift _ getOrElse padChar)).toArray
 
