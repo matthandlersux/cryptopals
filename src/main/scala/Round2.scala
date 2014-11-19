@@ -40,8 +40,12 @@ object Round2 {
     ecbRuns.size.toDouble/totalRuns
   }
 
-  def problem12: String = {
+  def problem12 = {
     val bytes = Helpers.decode64(Data.Round2.problem12)
-    Crypto.decryptECBEncryptedString(bytes, 16)
+    val key = Helpers.randomKey(16)
+    def blackBox(string: String): String =
+      Crypto.encryptAESECB((string map (_.toByte)).toArray ++ bytes, key map (_.toChar) mkString "")
+
+    Crypto.decryptECBBlackBox(16, blackBox)
   }
 }

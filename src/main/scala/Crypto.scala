@@ -8,23 +8,6 @@ import scala.util.Random
 
 object Crypto {
 
-  def decryptECBEncryptedString(unknownString: Array[Byte], blockSize: Int): String = {
-    val randomKey = Helpers.randomKey(blockSize) map (_.toChar) mkString ""
-
-    unknownString flatMap { char =>
-      val prefix = (("A" * (blockSize - 1)) map (_.toByte)).toArray
-      val bait = prefix :+ char
-      Random.shuffle(0 to 256) find { possibleChar =>
-        val known = prefix :+ possibleChar.toByte
-        val decrypted = decryptAESECB(known ++ bait, randomKey)
-        val first = decrypted take blockSize
-        val second = decrypted drop blockSize take blockSize
-
-        first == second
-      }
-    } map (_.toChar) mkString ""
-  }
-
   def findRepeatingBlockScore(string: String, size: Int): Double =
     (string grouped size).toSet.size.toDouble/size
 
@@ -46,6 +29,22 @@ object Crypto {
 
   private def randomPad(base: Int, variable: Int): Array[Byte] =
     Helpers.randomKey(base) ++ Helpers.randomKey(Random.nextInt(variable + 1))
+
+  private case class DecryptECB(padding: String, acc: String)
+
+  def decryptECBBlackBox(blockSize: Int, blackBox: String => String): String = {
+    val decrypted = blackBox("").zipWithIndex.foldLeft(DecryptECB("A" * 15, "")) { case (DecryptECB(padding, acc), (_, i)) =>
+      val char = (0 to 256) map (_.toChar) find { char =>
+        val encrypted = blackBox(padding + char + (padding take (blockSize - 1 - (i % blockSize))))
+        val head = encrypted take blockSize
+        val compare = encrypted drop (i/blockSize * blockSize + blockSize) take blockSize
+        head == compare
+      }
+
+      DecryptECB((padding drop 1) + char.get, acc + char.get)
+    }
+    decrypted.acc
+  }
 
   private case class CBCAcc(iv: Array[Byte], output: Array[Byte] = Array())
 
@@ -79,10 +78,14 @@ object Crypto {
     val cipherName = algorithm + "/ECB/NoPadding"
     val keyBytes = (key map (_.toByte)).toArray
     val secretKey = new SecretKeySpec(keyBytes, algorithm)
+    val padded = bytes.size % key.size match {
+      case 0 => bytes
+      case i => Helpers.padBlock(bytes, bytes.size + (key.size - i), Byte.box(0))
+    }
 
     val cipher = Cipher.getInstance(cipherName)
     cipher.init(mode, secretKey)
-    Helpers.bytesToString(cipher.doFinal(bytes))
+    Helpers.bytesToString(cipher.doFinal(padded))
   }
 
   def hashWithRotatingKey(bytes: Array[Byte], key: String): String =
