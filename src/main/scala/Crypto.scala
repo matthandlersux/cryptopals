@@ -14,19 +14,30 @@ object Crypto {
   def findRepeatingBlockScore[T](array: Array[T], size: Int): Double =
     (array grouped size).toSet.size.toDouble/size
 
-  private case class DecryptECB(padding: String, acc: String)
+  private case class DecryptECB(padding: String, acc: String) {
+    def shift(char: Char): DecryptECB =
+      copy((padding drop 1) + char, acc + char)
+  }
 
   def decryptECBBlackBox(blockSize: Int, blackBox: String => String): String = {
-    val decrypted = blackBox("").zipWithIndex.foldLeft(DecryptECB("A" * 15, "")) { case (DecryptECB(padding, acc), (_, i)) =>
-      val char = (0 to 256) map (_.toChar) find { char =>
-        val encrypted = blackBox(padding + char + (padding take (blockSize - 1 - (i % blockSize))))
-        val head = encrypted take blockSize
-        val compare = encrypted drop (i/blockSize * blockSize + blockSize) take blockSize
-        head == compare
-      }
+    val decrypted = blackBox("").zipWithIndex.foldLeft(DecryptECB("A" * 15, "")) {
+      case (acc @ DecryptECB(padding, _), (_, i)) =>
+        val char = (0 to 256) map (_.toChar) find { char =>
+          val knownHead = padding + char
+          val shiftingHead = padding take (blockSize - 1 - (i % blockSize))
 
-      DecryptECB((padding drop 1) + char.get, acc + char.get)
+          val encrypted = blackBox(knownHead + shiftingHead)
+          val head = encrypted take blockSize
+          val compare = encrypted drop (i/blockSize * blockSize + blockSize) take blockSize
+
+          head == compare
+        }
+
+        char map acc.shift getOrElse {
+          throw new Error(s"Could not find matching byte for character $i in appended string")
+        }
     }
+
     decrypted.acc
   }
 
