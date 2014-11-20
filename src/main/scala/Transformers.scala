@@ -7,6 +7,15 @@ import java.net.{URLEncoder, URLDecoder}
 
 object Transformers {
 
+  private val base64Chars =
+    ((65 to 90) ++ (97 to 122) ++ (48 to 57) :+ 43 :+ 47 :+ 61) map (_.toChar)
+
+  private val base64DecodingMap =
+    base64Chars.zipWithIndex.toMap
+
+  private val base64EncodingMap =
+    base64Chars.zipWithIndex.map(_.swap).toMap
+
   def bytesToString(bytes: Array[Byte]): String =
     bytes map (_.toChar) mkString ""
 
@@ -21,6 +30,26 @@ object Transformers {
 
   def encode64(string: String): String =
     new BASE64Encoder().encodeBuffer(string.getBytes)
+
+  def manualEncode64(string: Array[Byte]): String =
+    string grouped 3 flatMap {
+      case Array(a, b, c) => convert3BytesTo4(a, b, c)
+      case Array(a, b) => convert3BytesTo4(a, b, Byte.box(0)).take(3) :+ 64
+      case Array(a) => convert3BytesTo4(a, Byte.box(0), Byte.box(0)).take(2) ++ Array(64, 64)
+    } map base64EncodingMap mkString ""
+
+  private def convert3BytesTo4(a: Byte, b: Byte, c: Byte): Array[Int] =
+    Array(a >>> 2, ((a & 3) << 4) + (b >>> 4), ((b & 15) << 2) + (c >>> 6), c & 63)
+
+  def manualDecode64(string: String): Array[Byte] =
+    (string.toCharArray map base64DecodingMap map (_.toByte) grouped 4 flatMap {
+      case Array(a, b, c, d) if c == 64 && d == 64 => convert4BytesTo3(a, b, 0, 0) take 1
+      case Array(a, b, c, d) if d == 64 => convert4BytesTo3(a, b, c, 0) take 2
+      case Array(a, b, c, d) => convert4BytesTo3(a, b, c, d)
+    }).toArray
+
+  private def convert4BytesTo3(a: Byte, b: Byte, c: Byte, d: Byte): Array[Byte] =
+    Array((a << 2) + (b >>> 4), ((b & 15) << 4) + (c >>> 2), ((c & 3) << 6) + d) map (_.toByte)
 
   def decode64(string: String): Array[Byte] =
     new BASE64Decoder().decodeBuffer(string)
