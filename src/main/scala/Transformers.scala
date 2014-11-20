@@ -39,7 +39,7 @@ object Transformers {
     } map base64EncodingMap mkString ""
 
   private def convert3BytesTo4(a: Byte, b: Byte, c: Byte): Array[Int] =
-    Array(a >>> 2, ((a & 3) << 4) + (b >>> 4), ((b & 15) << 2) + (c >>> 6), c & 63)
+    Array(a >>> 2, ((a & 3) << 4) | (b >>> 4), ((b & 15) << 2) | (c >>> 6), c & 63)
 
   def manualDecode64(string: String): Array[Byte] =
     (string.toCharArray map base64DecodingMap map (_.toByte) grouped 4 flatMap {
@@ -49,7 +49,7 @@ object Transformers {
     }).toArray
 
   private def convert4BytesTo3(a: Byte, b: Byte, c: Byte, d: Byte): Array[Byte] =
-    Array((a << 2) + (b >>> 4), ((b & 15) << 4) + (c >>> 2), ((c & 3) << 6) + d) map (_.toByte)
+    Array((a << 2) | (b >>> 4), ((b & 15) << 4) | (c >>> 2), ((c & 3) << 6) | d) map (_.toByte)
 
   def decode64(string: String): Array[Byte] =
     new BASE64Decoder().decodeBuffer(string)
