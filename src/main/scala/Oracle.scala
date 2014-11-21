@@ -7,6 +7,15 @@ import scala.util.Random
 
 object Oracle {
 
+  def encodedParamsOracle: String => String = {
+    val key = Helpers.randomKey(16)
+    (email: String) => {
+      val encodedEmail = (email replaceAll ("&", "%26") replaceAll ("=", "%3D") map (_.toByte)).toArray
+      val bytes = (s"email=$encodedEmail&uid=10&role=user" map (_.toByte)).toArray
+      Crypto.encryptECB(bytes, key map (_.toChar) mkString "")
+    }
+  }
+
   def stringPrependOracle: String => String = {
     val bytes = Transformers.decode64(Data.Round2.problem12)
     val key = Helpers.randomKey(16)
