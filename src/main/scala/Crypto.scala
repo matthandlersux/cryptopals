@@ -44,19 +44,21 @@ object Crypto {
   private case class CBCAcc(iv: Array[Byte], output: Array[Byte] = Array())
 
   def decryptCBC(bytes: Array[Byte], key: String, iv: Array[Byte]): String = {
-    val cbc = (bytes grouped key.size).foldLeft(CBCAcc(iv)) { case (CBCAcc(vector, output), cipherText) =>
-      val decrypted = decryptECB(cipherText, key) map (_.toByte)
-      CBCAcc(cipherText, output ++ Xor.xorBytes(decrypted.toArray, vector))
+    val cbc = (bytes grouped key.size).foldLeft(CBCAcc(iv)) {
+      case (CBCAcc(vector, output), cipherText) =>
+        val decrypted = decryptECB(cipherText, key) map (_.toByte)
+        CBCAcc(cipherText, output ++ Xor.xorBytes(decrypted.toArray, vector))
     }
 
     cbc.output map (_.toChar) mkString ""
   }
 
   def encryptCBC(bytes: Array[Byte], key: String, iv: Array[Byte]): String = {
-    val cbc = (bytes grouped key.size).foldLeft(CBCAcc(iv)) { case (CBCAcc(vector, output), plainText) =>
-      val xored = Xor.xorBytes(plainText, vector)
-      val cipherText = (encryptECB(xored, key) map (_.toByte)).toArray
-      CBCAcc(cipherText, output ++ cipherText)
+    val cbc = (bytes grouped key.size).foldLeft(CBCAcc(iv)) {
+      case (CBCAcc(vector, output), plainText) =>
+        val xored = Xor.xorBytes(plainText, vector)
+        val cipherText = (encryptECB(xored, key) map (_.toByte)).toArray
+        CBCAcc(cipherText, output ++ cipherText)
     }
 
     cbc.output map (_.toChar) mkString ""
