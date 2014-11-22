@@ -43,4 +43,14 @@ class Round2Spec extends FreeSpec {
     }
 
   }
+
+  "problem 13" - {
+
+    "injects a role=admin key into parsed json block" in {
+      val json = Round2.problem13.get
+
+      (json \ "role").as[String] shouldEqual "admin"
+    }
+
+  }
 }

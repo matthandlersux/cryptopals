@@ -4,6 +4,8 @@ import crypto.{Oracle, Crypto}
 import helpers.{Transformers, Helpers}
 import data.Data
 
+import play.api.libs.json.JsObject
+
 object Round2 {
 
   import Transformers.bytesToString
@@ -42,5 +44,17 @@ object Round2 {
 
   def problem12: String = {
     Crypto.decryptECBBlackBox(16, Oracle.stringPrependOracle)
+  }
+
+  def problem13: Option[JsObject] = {
+    val key = Helpers.randomKey(16) map (_.toChar) mkString ""
+    val emailWithAdmin = "asdf@e.comadmin"
+    val encryptedAdminBlock = Oracle.encodedParamsOracle(key, emailWithAdmin) drop 16 take 16
+    val emailWithBoundary = "asdf@email.cm"
+    val encryptedHeadBlock = Oracle.encodedParamsOracle(key, emailWithBoundary) take 32
+
+    val encoded = Crypto.decryptECB((encryptedHeadBlock + encryptedAdminBlock + encryptedHeadBlock.take(16)).map(_.toByte).toArray, key)
+
+    Transformers.parseQueryString(encoded)
   }
 }
