@@ -19,6 +19,17 @@ object Oracle {
     (string: String) => Crypto.encryptECB((string map (_.toByte)).toArray ++ bytes, key map (_.toChar) mkString "")
   }
 
+  def stringEncaseOracle: String => String = {
+    val prepend = Helpers.randomKey(Random.nextInt(17))
+    val bytes = Transformers.decode64(Data.Round2.problem12)
+    val key = Helpers.randomKey(16)
+
+    (string: String) => {
+      val stringBytes = string.map(_.toByte).toArray
+      Crypto.encryptECB(prepend ++ stringBytes ++ bytes, key map (_.toChar) mkString "")
+    }
+  }
+
   def ecbCBCOracle(string: String): String = {
     val keySize = 16
     val randomKey = Helpers.randomKey(keySize) map (_.toChar) mkString ""
