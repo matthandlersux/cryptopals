@@ -42,7 +42,7 @@ object Helpers {
   }
 
   def scoreString(string: String): Int =
-    string.toCharArray.foldLeft(0) { (sum, char) =>
+    string.toLowerCase.toCharArray.foldLeft(0) { (sum, char) =>
       sum + freqMap.getOrElse(char, 0)
     }
 
