@@ -14,6 +14,19 @@ object Crypto {
   def findRepeatingBlockScore[T](array: Array[T], size: Int): Double =
     (array grouped size).toSet.size.toDouble/size
 
+  def decryptECBBlackBoxWithPrepend(blockSize: Int, blackBox: String => String): String = {
+    // inject repeating string to discover target prepend and target start block
+    // run decrypte black box with i + start block
+  }
+
+  private def discoverPrependBoundary(blockSize: Int, blackBox: String => String): (String, Int) = {
+    val length = 100
+    val identifiableString = "A" * blockSize * length
+    val encrypted = blackBox(identifiableString)
+    val counts = encrypted grouped (blockSize) groupBy identity mapValues (_.size)
+    counts find { case (_, value) => value > (length - 2) && value <= length } map
+  }
+
   private case class DecryptECB(padding: String, acc: String) {
     def shift(char: Char): DecryptECB =
       copy((padding drop 1) + char, acc + char)
