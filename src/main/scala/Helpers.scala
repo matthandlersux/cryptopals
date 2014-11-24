@@ -1,6 +1,28 @@
 package helpers
 
 import scala.util.Random
+import scala.math.BigInt
+
+object Math {
+
+  // function modular_pow(base, exponent, modulus)
+  //     Assert :: (modulus - 1) * (modulus - 1) does not overflow base
+  //     result := 1
+  //     base := base mod modulus
+  //     while exponent > 0
+  //         if (exponent mod 2 == 1):
+  //            result := (result * base) mod modulus
+  //         exponent := exponent >> 1
+  //         base := (base * base) mod modulus
+  //     return result
+
+  def modeExp(base: BigInt, exponent: Int, modulus: Int): Int = {
+
+  }
+
+  private def reduceUntil
+
+}
 
 object Helpers {
 
