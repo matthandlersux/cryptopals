@@ -2,6 +2,7 @@ package helpers
 
 import scala.util.Random
 import scala.math.BigInt
+import scala.annotation.tailrec
 
 object Math {
 
@@ -15,12 +16,18 @@ object Math {
   //         exponent := exponent >> 1
   //         base := (base * base) mod modulus
   //     return result
+  private case class BR(base: Int, expresult: Int)
 
-  def modeExp(base: BigInt, exponent: Int, modulus: Int): Int = {
+  def modeExp(base: BigInt, exponent: Int, modulus: Int): Int =
+    if (exponent > 0)
+      modeExp()
+    repeatUntil(BR(base % modulus, 1))()
 
   }
 
-  private def reduceUntil
+  @tailrec
+  def repeatUntil[A](a: A)(test: A => Boolean)(f: A => A): A =
+    if (test(a)) a else repeatUntil(f(a))(test)(f)
 
 }
 
